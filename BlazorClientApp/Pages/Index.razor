@@ -1,0 +1,31 @@
+﻿@page "/"
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>Index</PageTitle>
+
+@page "/chat"
+@inject HttpClient Http
+
+<h3>Ask Llama</h3>
+
+<input @bind="userInput" placeholder="Enter prompt..." />
+<button @onclick="AskLlama">Send</button>
+
+<p>@llamaResponse</p>
+
+@code {
+    private string userInput;
+    private string llamaResponse;
+    private HttpClient _httpClient;
+
+    protected override void OnInitialized()
+    {
+        _httpClient = ClientFactory.CreateClient("API");
+    }
+
+    private async Task AskLlama()
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/llama/ask", userInput);
+        llamaResponse = await response.Content.ReadAsStringAsync();
+    }
+}
